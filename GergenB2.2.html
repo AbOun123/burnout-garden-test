@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<title>Burnout Garden Test 🌿</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Sans+Thai:wght@400;500;600&display=swap');
+  :root {
+    --green: #00a97f;
+    --light-green: #e8f5f0;
+    --blue: #00c2ff;
+  }
+  body {
+    font-family: "Inter", "Noto Sans Thai", Arial, sans-serif;
+    background: linear-gradient(180deg, #f0f9f4, #d8e8e4);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+  }
+  /* ลอยใบไม้เบา ๆ */
+  .leaf {
+    position: absolute;
+    width: 20px;
+    height: 10px;
+    background: linear-gradient(45deg, #8bc34a, #4caf50);
+    border-radius: 50% 0;
+    opacity: 0.6;
+    pointer-events: none;
+    animation: float 18s infinite linear;
+    transform: rotate(30deg);
+  }
+  .leaf:nth-child(odd) { animation-duration: 22s; animation-delay: -5s; }
+  .leaf:nth-child(3n) { background: #ffca28; width: 16px; height: 8px; }
+  .leaf:nth-child(4n) { opacity: 0.4; animation-duration: 25s; }
+  @keyframes float {
+    0% { transform: translateY(100vh) rotate(0deg) translateX(-30vw); }
+    100% { transform: translateY(-30vh) rotate(360deg) translateX(40vw); }
+  }
+  .card {
+    background: white;
+    width: 92%;
+    max-width: 720px;
+    padding: 28px;
+    border-radius: 24px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.12);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    z-index: 2;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 30% 20%, rgba(0,169,127,0.08), transparent 60%);
+    pointer-events: none;
+  }
+  h1 {
+    font-size: 24px;
+    margin: 0 0 20px;
+    color: #2c3e50;
+    text-align: center;
+    animation: fadeInUp 0.8s ease-out;
+  }
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  p { color: #555; line-height: 1.6; text-align: center; }
+  button {
+    width: 100%;
+    padding: 16px;
+    margin: 12px 0;
+    border: 2px solid #e0e0e0;
+    border-radius: 16px;
+    background: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+  }
+  button:hover {
+    transform: translateY(-4px) scale(1.03);
+    border-color: var(--green);
+    background: var(--light-green);
+    box-shadow: 0 12px 24px rgba(0,169,127,0.18);
+  }
+  button:active {
+    transform: scale(0.96);
+    animation: boing 0.4s;
+  }
+  @keyframes boing {
+    0%,100% { transform: scale(1); }
+    40% { transform: scale(1.08); }
+    70% { transform: scale(0.94); }
+  }
+  .progress {
+    height: 10px;
+    background: #f0f0f0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 24px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+  }
+  .bar {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--green), var(--blue));
+    border-radius: 10px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 0 0 12px rgba(0,169,127,0.4);
+  }
+  .result {
+    font-size: 26px;
+    font-weight: 700;
+    text-align: center;
+    margin: 20px 0;
+    color: var(--green);
+    animation: popIn 1s ease-out;
+  }
+  @keyframes popIn {
+    0% { transform: scale(0.6); opacity: 0; }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  /* สีตามระดับผล */
+  .result.good { color: #27ae60; animation: happyBounce 2s infinite; }
+  .result.mid { color: #f39c12; }
+  .result.high { color: #e67e22; }
+  .result.danger { color: #c0392b; }
+  @keyframes happyBounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  /* ปุ่มเปิด/ปิดเสียง */
+  #sound-toggle {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 10;
+    background: rgba(255,255,255,0.8);
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+</style>
+</head>
+<body>
+<!-- ใบไม้ลอย ๆ 5 อัน -->
+<div class="leaf" style="left:10%; animation-delay:-3s;"></div>
+<div class="leaf" style="left:35%; animation-delay:-8s;"></div>
+<div class="leaf" style="left:60%; animation-delay:-12s;"></div>
+<div class="leaf" style="left:80%; animation-delay:-18s;"></div>
+<div class="leaf" style="left:22%; animation-delay:-15s; width:24px; height:12px;"></div>
+
+<button id="sound-toggle" onclick="toggleSound()">🔇</button>
+
+<div class="card" id="app">
+  <div class="progress"><div class="bar" id="bar"></div></div>
+  <div id="content"></div>
+</div>
+
+<audio id="bg-audio" loop volume="0.3">
+  <source src="https://www.orangefreesounds.com/wp-content/uploads/2021/08/Bird-sounds-in-the-summer-garden.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
+</audio>
+
+<script>
+let score = 0;
+let q = 0;
+let soundOn = false;
+const audio = document.getElementById("bg-audio");
+
+function toggleSound() {
+  soundOn = !soundOn;
+  if (soundOn) {
+    audio.play().then(() => {
+      console.log("เสียงนกเล่นแล้ว 🌿");
+    }).catch(e => {
+      console.error("เล่นไม่ได้ (policy):", e);
+      alert("เบราว์เซอร์บล็อกเสียงอัตโนมัติ กดไอคอนเสียงอีกครั้งเพื่อเปิดเสียงนกในสวนนะคะ 🐦");
+    });
+    document.getElementById("sound-toggle").textContent = "🔊";
+  } else {
+    audio.pause();
+    document.getElementById("sound-toggle").textContent = "🔇";
+  }
+}
+
+const questions = [
+  {
+    q: "🌳 Q1: คุณเห็นสวนนี้เป็นแบบไหน?",
+    a: [
+      ["A) สวนเขียวสด มีแสงแดด อากาศดี", 4],
+      ["B) สวนปกติ มีต้นไม้บ้าง แต่ดูเฉยๆ", 3],
+      ["C) สวนรก มีวัชพืช และดูหม่น", 2],
+      ["D) สวนแห้งแล้ง เหมือนขาดการดูแล", 1]
+    ]
+  },
+  {
+    q: "🚶 Q2: คุณอยากเดินไปที่ไหนก่อน?",
+    a: [
+      ["A) บ่อน้ำใส", 4],
+      ["B) ศาลานั่งพัก", 3],
+      ["C) แปลงดอกไม้", 2],
+      ["D) ทางออกของสวน", 1]
+    ]
+  },
+  {
+    q: "🎒 Q3: คุณพกอะไรติดตัวไป?",
+    a: [
+      ["A) สมุดบันทึก", 4],
+      ["B) โทรศัพท์", 3],
+      ["C) อาหารและน้ำ", 2],
+      ["D) ไม่พกอะไรเลย", 1]
+    ]
+  },
+  {
+    q: "🌸 Q4: คุณเห็นดอกไม้ดอกหนึ่ง คุณจะทำอะไร?",
+    a: [
+      ["A) เด็ดมาชื่นชม", 4],
+      ["B) ถ่ายรูปเก็บไว้", 3],
+      ["C) เดินผ่าน", 2],
+      ["D) ไม่สนใจ", 1]
+    ]
+  },
+  {
+    q: "🌩️ Q5: ฝนตกหนัก คุณจะทำอย่างไร?",
+    a: [
+      ["A) วิ่งหาที่หลบ", 4],
+      ["B) กางร่ม เดินต่อ", 3],
+      ["C) นั่งรอให้ฝนหยุด", 2],
+      ["D) เดินออกจากสวนทันที", 1]
+    ]
+  }
+];
+
+function renderIntro() {
+  document.getElementById("content").innerHTML = `
+    <h1>🧠 แบบทดสอบ: “สวนแห่งงานและชีวิตการทำงาน”</h1>
+    <p>หลับตา 10 วินาที แล้วเลือกคำตอบที่ “รู้สึกใช่” มากที่สุดนะคะ 🌱</p>
+    <p>(เปิดเสียงนกในสวนได้จากไอคอนมุมขวาบนเลยค่ะ 🐦)</p>
+    <button onclick="nextQ()">เริ่มเดินเล่นในสวนกันเลย!</button>
+  `;
+}
+
+function nextQ() {
+  if (q >= questions.length) return showResult();
+  const data = questions[q];
+  let html = `<h1>${data.q}</h1>`;
+  data.a.forEach((x, i) => {
+    html += `<button onclick="answer(${x[1]})">${x[0]}</button>`;
+  });
+  document.getElementById("content").innerHTML = html;
+  document.getElementById("bar").style.width = ((q + 1) / questions.length * 100) + "%";
+}
+
+function answer(v) {
+  score += v;
+  q++;
+  // ให้ card สั่นเบา ๆ ตอนเลือก
+  document.querySelector(".card").style.animation = "boing 0.4s";
+  setTimeout(() => {
+    document.querySelector(".card").style.animation = "";
+    nextQ();
+  }, 300);
+}
+
+function showResult() {
+  document.getElementById("bar").style.width = "100%";
+  let result = "";
+  let profile = "";
+  let resultClass = "";
+  if (score >= 16) {
+    result = "🌟 Passionate & Engaged Performer";
+    profile = "คุณยังมีพลังภายในสูงมาก มองงานเป็นพื้นที่เติบโต Burnout ต่ำมากเลยค่ะ!";
+    resultClass = "good";
+  } else if (score >= 11) {
+    result = "🌱 Stable but At Risk";
+    profile = "ยังไปได้ดีอยู่ แต่ motivation เริ่มลดลงนิด ๆ อยากหา meaning ใหม่ ๆ แล้วนะ";
+    resultClass = "mid";
+  } else if (score >= 6) {
+    result = "🧯 Quiet Burnout (High Risk)";
+    profile = "ทำงานแบบ survival mode ใจเริ่ม disengaged แล้ว ระวังหน่อยนะคะ";
+    resultClass = "high";
+  } else {
+    result = "🕳️ Existential Burnout";
+    profile = "งานตอนนี้แทบไม่มีความหมายเลย เสี่ยงจะอยากออกจากวงการสูงมาก";
+    resultClass = "danger";
+  }
+  document.getElementById("content").innerHTML = `
+    <h1 class="result ${resultClass}">${result}</h1>
+    <p>${profile}</p>
+    <p><b>คะแนนรวม: ${score}/20</b></p>
+    <button onclick="location.reload()">เดินเล่นในสวนอีกรอบ</button>
+  `;
+}
+
+renderIntro();
+</script>
+</body>
+</html>
